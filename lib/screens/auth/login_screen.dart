@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:developer';
+import 'package:app_chat/api/api.dart';
 import 'package:app_chat/helper/dialogs.dart';
 import 'package:app_chat/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,15 +30,24 @@ class _LoginScreen extends State<LoginScreen> {
 
   _handleGoogleBtnClick() {
     Dialogs.showProgressbar(context);
-    _signInWithGoogle().then((user) {
+    _signInWithGoogle().then((user) async {
       Navigator.pop(context);
       if (user != null) {
         print('\nUser: ${user.user?.displayName}');
         print('\nUserAdditionalInfo: ${user.additionalUserInfo?.toString()}');
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        if (await APIs.userExists()){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        }else{
+          await APIs.createUser().then((value){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          });
+        }
       }
     }).catchError((e) {
       print('Error during Google sign-in: $e');

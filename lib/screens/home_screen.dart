@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app_chat/screens/auth/login_screen.dart';
+import 'package:app_chat/screens/profile_screen.dart';
 import 'package:app_chat/widgets/chat_user_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,6 +20,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen> {
   List<ChatUser> list=[];
+
+  @override
+  void initState() {
+    super.initState();
+    APIs.getSelfInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,11 +35,13 @@ class _HomeScreen extends State<HomeScreen> {
         title: const Text('Chatting'),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+          IconButton(onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_)=> ProfileScreen(user: APIs.me)));
+          }, icon: Icon(Icons.more_vert)),
         ],
       ),
       body: StreamBuilder(
-        stream: APIs.firestore.collection('users').snapshots(),
+        stream: APIs.getAllUsers(),
         builder: (context,snapshot){
 
           switch (snapshot.connectionState)

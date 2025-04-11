@@ -5,6 +5,7 @@ import 'package:app_chat/screens/profile_screen.dart';
 import 'package:app_chat/widgets/chat_user_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:app_chat/main.dart';
 
@@ -27,6 +28,24 @@ class _HomeScreen extends State<HomeScreen> {
   void initState() {
     super.initState();
     APIs.getSelfInfo();
+    APIs.updateActiveStatus(true);
+    //for updating user active status according to lifecycle events
+    //resume -- active or online
+    //pause  -- inactive or offline
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      print('Message: $message');
+
+      if (APIs.auth.currentUser != null) {
+        if (message.toString().contains('resume')) {
+          APIs.updateActiveStatus(true);
+        }
+        if (message.toString().contains('pause')) {
+          APIs.updateActiveStatus(false);
+        }
+      }
+
+      return Future.value(message);
+    });
   }
 
   @override

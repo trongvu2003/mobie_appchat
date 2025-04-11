@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:app_chat/helper/dialogs.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -38,10 +39,14 @@ class _ProfileScreen extends State<ProfileScreen> {
               backgroundColor: Colors.redAccent,
               onPressed: () async {
                 Dialogs.showProgressbar(context);
+
+                await APIs.updateActiveStatus(false);
+
                 await APIs.auth.signOut().then((value) async {
                   await GoogleSignIn().signOut().then((value){
                     Navigator.pop(context);
                     Navigator.pop(context);
+                    APIs.auth = FirebaseAuth.instance;
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>LoginScreen()));
                   });
                 });

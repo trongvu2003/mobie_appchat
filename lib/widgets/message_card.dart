@@ -1,5 +1,6 @@
 import 'package:app_chat/helper/my_date_until.dart';
 import 'package:app_chat/models/message.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../api/api.dart';
@@ -39,12 +40,44 @@ class _MessageCardState extends State<MessageCard> {
             ) ),
             padding: EdgeInsets.all(mq.width * .04),
             margin: EdgeInsets.symmetric(horizontal: mq.width * .04, vertical: mq.height * .01),
-            child: Text(widget.message.msg , style: TextStyle(fontSize: 15, color: Colors.black),),
-          ),
+            child:
+            widget.message.type == Type.text
+                ?
+            Text(widget.message.msg , style: TextStyle(fontSize: 15, color: Colors.black),
+            ):ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                child: CachedNetworkImage(
+                imageUrl: widget.message.msg,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                errorWidget: (context, url, error) =>
+                const Icon(Icons.image, size: 70),
+                ),
+                ),
+                ),
+
         ),
         Padding(
           padding: EdgeInsets.only(right: mq.width * .04),
-          child: Text(MyDateUril.getFormattesTime(context: context, time: widget.message.sent), style: TextStyle(fontSize: 13,color: Colors.black45),),
+          child: widget.message.type == Type.text
+              ?
+          Text(widget.message.msg , style: TextStyle(fontSize: 15, color: Colors.black),
+          ):ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(15)),
+            child: CachedNetworkImage(
+              imageUrl: widget.message.msg,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              errorWidget: (context, url, error) =>
+              const Icon(Icons.image, size: 70),
+            ),
+          ),
         ),
       ],
     );
@@ -60,7 +93,7 @@ class _MessageCardState extends State<MessageCard> {
               if (widget.message.read.isNotEmpty)
               Icon(Icons.done_all_rounded,color: Colors.blue,size: 20,),
               //thoi gian gửi tn
-              Text(MyDateUril.getFormattesTime(context: context, time: widget.message.sent),
+              Text(MyDateUtil.getFormattesTime(context: context, time: widget.message.sent),
                 style: TextStyle(fontSize: 13,color: Colors.black45),),
               SizedBox(width: 2,)
             ],
